@@ -96,7 +96,8 @@ func (s *Store) ApplyMigrations(ctx context.Context, dir string) error {
 }
 
 // EnsureBootstrapData 初始化默认角色、权限和管理员。
-func (s *Store) EnsureBootstrapData(ctx context.Context, username, passwordHash string) error {
+// syncBootstrapPassword 为 true 时，若引导用户已存在，则用 passwordHash 覆盖其密码哈希（与 .env 中当前口令对齐）。
+func (s *Store) EnsureBootstrapData(ctx context.Context, username, passwordHash string, syncBootstrapPassword bool) error {
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
 		return err
@@ -123,9 +124,12 @@ func (s *Store) EnsureBootstrapData(ctx context.Context, username, passwordHash 
 		if err = tx.QueryRow(ctx, "INSERT INTO users(username,password_hash) VALUES($1,$2) RETURNING id", username, passwordHash).Scan(&userID); err != nil {
 			return err
 		}
-	}
-	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+	} else if err != nil {
 		return err
+	} else if syncBootstrapPassword {
+		if _, err = tx.Exec(ctx, "UPDATE users SET password_hash=$2, updated_at=NOW() WHERE id=$1", userID, passwordHash); err != nil {
+			return err
+		}
 	}
 	_, _ = tx.Exec(ctx, "INSERT INTO user_roles(user_id, role_id) VALUES($1,$2) ON CONFLICT DO NOTHING", userID, roleID)
 	return tx.Commit(ctx)

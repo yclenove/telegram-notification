@@ -91,6 +91,11 @@ docker compose up -d --build
 
 首次启动会自动初始化超级管理员与基础权限。
 
+若你**曾用旧口令启动成功过**，之后只改了 `.env` 里的 `BOOTSTRAP_PASSWORD`，数据库里的哈希**不会自动变**，管理台会一直 **401**。处理方式：
+
+1. 在 `.env` 中临时设置 **`BOOTSTRAP_PASSWORD_SYNC=true`**，保存后**重启 relay 一次**（启动日志会出现 `bootstrap password sync enabled`），再用新口令登录；
+2. 登录成功后把 **`BOOTSTRAP_PASSWORD_SYNC` 改回 `false`**（或删除该行），避免长期每次启动都覆盖管理员密码。
+
 ## 监控与演练
 
 - 基础探针：`/healthz`、`/metrics`

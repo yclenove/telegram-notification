@@ -68,11 +68,14 @@ type DatabaseConfig struct {
 
 // AuthConfig 描述管理端认证与 Token 配置。
 type AuthConfig struct {
-	JWTSecret          string `yaml:"jwt_secret"`
-	AccessTokenTTLMin  int    `yaml:"access_token_ttl_min"`
-	RefreshTokenTTLMin int    `yaml:"refresh_token_ttl_min"`
-	BootstrapUsername  string `yaml:"bootstrap_username"`
-	BootstrapPassword  string `yaml:"bootstrap_password"`
+	JWTSecret               string `yaml:"jwt_secret"`
+	AccessTokenTTLMin       int    `yaml:"access_token_ttl_min"`
+	RefreshTokenTTLMin      int    `yaml:"refresh_token_ttl_min"`
+	BootstrapUsername       string `yaml:"bootstrap_username"`
+	BootstrapPassword       string `yaml:"bootstrap_password"`
+	// BootstrapPasswordSync 为 true 时，每次启动将引导账号的 password_hash 更新为当前 BootstrapPassword 的哈希。
+	// 解决「首次启动写入库后改 .env 密码仍 401」；生产环境默认 false，仅在需要重置管理员密码时短期开启。
+	BootstrapPasswordSync bool `yaml:"bootstrap_password_sync"`
 }
 
 // WorkerConfig 描述异步分发 worker 的轮询与批次参数。
@@ -219,6 +222,9 @@ func overrideFromEnv(cfg *Config) {
 	setInt("REFRESH_TOKEN_TTL_MIN", &cfg.Auth.RefreshTokenTTLMin)
 	setString("BOOTSTRAP_USERNAME", &cfg.Auth.BootstrapUsername)
 	setString("BOOTSTRAP_PASSWORD", &cfg.Auth.BootstrapPassword)
+	if v := os.Getenv("BOOTSTRAP_PASSWORD_SYNC"); v != "" {
+		cfg.Auth.BootstrapPasswordSync = parseBoolEnv(v)
+	}
 	setInt("WORKER_POLL_INTERVAL_MS", &cfg.Worker.PollIntervalMS)
 	setInt("WORKER_BATCH_SIZE", &cfg.Worker.BatchSize)
 	setString("ADMIN_STATIC_DIR", &cfg.Web.AdminStaticDir)
@@ -254,6 +260,16 @@ func applyDatabaseDSNFromPGEnv(cfg *Config) {
 	q.Set("sslmode", "disable")
 	u.RawQuery = q.Encode()
 	cfg.Database.DSN = u.String()
+}
+
+// parseBoolEnv 解析常见真值字符串，用于 BOOTSTRAP_PASSWORD_SYNC 等开关。
+func parseBoolEnv(raw string) bool {
+	switch strings.ToLower(strings.TrimSpace(raw)) {
+	case "1", "true", "yes", "on":
+		return true
+	default:
+		return false
+	}
 }
 
 // splitCSV 将逗号分隔字符串转换为切片，用于白名单等配置项。

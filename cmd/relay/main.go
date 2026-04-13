@@ -60,9 +60,12 @@ func main() {
 		logger.Error("apply migrations failed", "error", err)
 		os.Exit(1)
 	}
-	if err := store.EnsureBootstrapData(context.Background(), cfg.Auth.BootstrapUsername, service.HashPassword(cfg.Auth.BootstrapPassword)); err != nil {
+	if err := store.EnsureBootstrapData(context.Background(), cfg.Auth.BootstrapUsername, service.HashPassword(cfg.Auth.BootstrapPassword), cfg.Auth.BootstrapPasswordSync); err != nil {
 		logger.Error("bootstrap admin failed", "error", err)
 		os.Exit(1)
+	}
+	if cfg.Auth.BootstrapPasswordSync {
+		logger.Info("bootstrap password sync enabled: admin password hash updated from current BOOTSTRAP_PASSWORD")
 	}
 	notifySvc := service.NewNotifyService(store, cfg.Retry.MaxAttempts)
 	authSvc := service.NewAuthService(store, cfg.Auth)
