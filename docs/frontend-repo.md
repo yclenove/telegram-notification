@@ -2,7 +2,8 @@
 
 管理台已从本仓库拆出，单独维护与发布：
 
-- 仓库名：**telegram-relay-admin**
+- 后端本仓库 / Go 模块：**telegram-relay**（`github.com/yclenove/telegram-relay`）
+- 前端仓库名：**telegram-relay-admin**
 - 建议路径：与本仓库同级克隆，例如 `../telegram-relay-admin`
 
 构建后将 `dist` 目录通过环境变量提供给网关：

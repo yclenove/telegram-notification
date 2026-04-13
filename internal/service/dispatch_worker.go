@@ -6,11 +6,11 @@ import (
 	"log/slog"
 	"time"
 
-	"telegram-notification/internal/config"
-	"telegram-notification/internal/model"
-	"telegram-notification/internal/repository/postgres"
-	relaylegacy "telegram-notification/internal/relay"
-	"telegram-notification/internal/telegram"
+	"github.com/yclenove/telegram-relay/internal/config"
+	"github.com/yclenove/telegram-relay/internal/model"
+	"github.com/yclenove/telegram-relay/internal/repository/postgres"
+	relaylegacy "github.com/yclenove/telegram-relay/internal/relay"
+	"github.com/yclenove/telegram-relay/internal/telegram"
 )
 
 // DispatchWorker 周期扫描待发送任务并投递到 Telegram。

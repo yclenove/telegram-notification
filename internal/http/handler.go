@@ -14,10 +14,10 @@ import (
 
 	"golang.org/x/time/rate"
 
-	"telegram-notification/internal/model"
-	"telegram-notification/internal/relay"
-	"telegram-notification/internal/security"
-	"telegram-notification/internal/service"
+	"github.com/yclenove/telegram-relay/internal/model"
+	"github.com/yclenove/telegram-relay/internal/relay"
+	"github.com/yclenove/telegram-relay/internal/security"
+	"github.com/yclenove/telegram-relay/internal/service"
 )
 
 type Handler struct {

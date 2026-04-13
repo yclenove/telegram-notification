@@ -6,7 +6,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 
-	"telegram-notification/internal/config"
+	"github.com/yclenove/telegram-relay/internal/config"
 )
 
 func TestHashPasswordStable(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"telegram-notification/internal/model"
+	"github.com/yclenove/telegram-relay/internal/model"
 )
 
 func TestFormatMessageContainsFields(t *testing.T) {

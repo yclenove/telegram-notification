@@ -1,5 +1,7 @@
 # Telegram Multi-Bot Relay Platform
 
+Go 模块：`github.com/yclenove/telegram-relay`（与 GitHub 仓库名 **telegram-relay** 对齐）。
+
 将原有单机器人中转服务升级为可运营平台，支持 PostgreSQL、多机器人路由、RBAC、异步队列发送和可视化管理台。
 
 ## 核心能力

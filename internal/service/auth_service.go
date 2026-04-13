@@ -9,8 +9,8 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 
-	"telegram-notification/internal/config"
-	"telegram-notification/internal/repository/postgres"
+	"github.com/yclenove/telegram-relay/internal/config"
+	"github.com/yclenove/telegram-relay/internal/repository/postgres"
 )
 
 // AuthService 负责后台账号认证与 JWT 签发。

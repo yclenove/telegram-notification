@@ -9,9 +9,9 @@ import (
 	"strconv"
 	"strings"
 
-	"telegram-notification/internal/model"
-	"telegram-notification/internal/repository/postgres"
-	"telegram-notification/internal/service"
+	"github.com/yclenove/telegram-relay/internal/model"
+	"github.com/yclenove/telegram-relay/internal/repository/postgres"
+	"github.com/yclenove/telegram-relay/internal/service"
 )
 
 type contextKey string

@@ -7,10 +7,10 @@ import (
 	"strings"
 	"time"
 
-	"telegram-notification/internal/config"
-	"telegram-notification/internal/model"
-	"telegram-notification/internal/retry"
-	"telegram-notification/internal/telegram"
+	"github.com/yclenove/telegram-relay/internal/config"
+	"github.com/yclenove/telegram-relay/internal/model"
+	"github.com/yclenove/telegram-relay/internal/retry"
+	"github.com/yclenove/telegram-relay/internal/telegram"
 )
 
 type Service struct {

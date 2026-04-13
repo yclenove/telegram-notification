@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"telegram-notification/internal/config"
+	"github.com/yclenove/telegram-relay/internal/config"
 )
 
 type Client struct {

@@ -12,14 +12,14 @@ import (
 
 	"golang.org/x/time/rate"
 
-	apiv2 "telegram-notification/internal/api/v2"
-	"telegram-notification/internal/config"
-	relayhttp "telegram-notification/internal/http"
-	"telegram-notification/internal/relay"
-	"telegram-notification/internal/repository/postgres"
-	"telegram-notification/internal/security"
-	"telegram-notification/internal/service"
-	"telegram-notification/internal/telegram"
+	apiv2 "github.com/yclenove/telegram-relay/internal/api/v2"
+	"github.com/yclenove/telegram-relay/internal/config"
+	relayhttp "github.com/yclenove/telegram-relay/internal/http"
+	"github.com/yclenove/telegram-relay/internal/relay"
+	"github.com/yclenove/telegram-relay/internal/repository/postgres"
+	"github.com/yclenove/telegram-relay/internal/security"
+	"github.com/yclenove/telegram-relay/internal/service"
+	"github.com/yclenove/telegram-relay/internal/telegram"
 )
 
 // main 负责完成服务启动的整体编排：

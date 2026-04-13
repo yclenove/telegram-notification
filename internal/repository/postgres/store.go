@@ -15,8 +15,8 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"telegram-notification/internal/domain"
-	"telegram-notification/internal/model"
+	"github.com/yclenove/telegram-relay/internal/domain"
+	"github.com/yclenove/telegram-relay/internal/model"
 )
 
 // Store 负责 PostgreSQL 的连接与数据访问。

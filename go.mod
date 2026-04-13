@@ -1,4 +1,4 @@
-module telegram-notification
+module github.com/yclenove/telegram-relay
 
 go 1.23.0
 

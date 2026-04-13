@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"telegram-notification/internal/model"
-	"telegram-notification/internal/repository/postgres"
+	"github.com/yclenove/telegram-relay/internal/model"
+	"github.com/yclenove/telegram-relay/internal/repository/postgres"
 )
 
 // NotifyService 负责把入站告警转换为事件+任务。

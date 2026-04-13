@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"telegram-notification/internal/config"
+	"github.com/yclenove/telegram-relay/internal/config"
 )
 
 func TestVerifyBasicSuccess(t *testing.T) {
