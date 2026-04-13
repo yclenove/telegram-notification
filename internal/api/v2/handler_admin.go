@@ -22,7 +22,7 @@ func (h *Handler) listRoles(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	writeJSON(w, list)
+	writeJSON(w, jsonSlice(list))
 }
 
 // listRolePermissions 返回指定角色的权限码列表（只读），便于管理台展示 RBAC 而不改库。
@@ -46,7 +46,7 @@ func (h *Handler) listRolePermissions(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	writeJSON(w, map[string]any{"role_id": rid, "permissions": codes})
+	writeJSON(w, map[string]any{"role_id": rid, "permissions": jsonSlice(codes)})
 }
 
 func (h *Handler) listUsers(w http.ResponseWriter, r *http.Request) {
@@ -59,7 +59,7 @@ func (h *Handler) listUsers(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	writeJSON(w, list)
+	writeJSON(w, jsonSlice(list))
 }
 
 func (h *Handler) createUser(w http.ResponseWriter, r *http.Request) {

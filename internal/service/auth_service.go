@@ -51,6 +51,10 @@ func (s *AuthService) Login(ctx context.Context, username, password string) (str
 	if err != nil {
 		return "", nil, 0, err
 	}
+	// nil slice 序列化为 JSON null，前端读 permissions.length 会抛错，统一成空数组。
+	if perms == nil {
+		perms = []string{}
+	}
 	return signed, perms, user.ID, nil
 }
 

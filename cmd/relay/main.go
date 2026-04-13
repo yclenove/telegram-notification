@@ -75,8 +75,8 @@ func main() {
 	limiter := rate.NewLimiter(rate.Limit(cfg.Security.RateLimitPerSecond), cfg.Security.RateLimitBurst)
 
 	mux := http.NewServeMux()
-	handler := relayhttp.NewHandler(logger, verifier, relayService, notifySvc, limiter)
-	handler.Register(mux)
+	relayHandler := relayhttp.NewHandler(logger, verifier, relayService, notifySvc, limiter)
+	relayHandler.Register(mux)
 	v2Handler := apiv2.NewHandler(logger, store, authSvc, notifySvc)
 	v2Handler.Register(mux)
 	// 仅当配置了静态目录且路径存在时挂载管理台，避免前端独立仓库后镜像内无文件导致异常。
@@ -93,9 +93,12 @@ func main() {
 	defer workerCancel()
 	go worker.Start(workerCtx)
 
+	// 统一包一层访问日志：默认仅启动/停机有几条日志，中间请求不可见会让排障困难。
+	httpHandler := relayhttp.AccessLog(logger, mux)
+
 	server := &http.Server{
 		Addr:         cfg.Server.ListenAddr,
-		Handler:      mux,
+		Handler:      httpHandler,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 20 * time.Second,
 		IdleTimeout:  60 * time.Second,

@@ -81,7 +81,7 @@ func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid credentials", http.StatusUnauthorized)
 		return
 	}
-	writeJSON(w, map[string]any{"access_token": token, "permissions": perms})
+	writeJSON(w, map[string]any{"access_token": token, "permissions": jsonSlice(perms)})
 }
 
 func (h *Handler) bots(w http.ResponseWriter, r *http.Request) {
@@ -95,7 +95,7 @@ func (h *Handler) bots(w http.ResponseWriter, r *http.Request) {
 		for i := range list {
 			list[i].BotTokenEnc = ""
 		}
-		writeJSON(w, list)
+		writeJSON(w, jsonSlice(list))
 	case http.MethodPost:
 		var req struct {
 			Name      string `json:"name"`
@@ -128,7 +128,7 @@ func (h *Handler) destinations(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		writeJSON(w, list)
+		writeJSON(w, jsonSlice(list))
 	case http.MethodPost:
 		var req struct {
 			BotID     int64  `json:"bot_id"`
@@ -160,7 +160,7 @@ func (h *Handler) rules(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		writeJSON(w, rules)
+		writeJSON(w, jsonSlice(rules))
 	case http.MethodPost:
 		var req struct {
 			Name          string `json:"name"`
@@ -203,7 +203,7 @@ func (h *Handler) events(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	writeJSON(w, map[string]any{"items": items, "total": total})
+	writeJSON(w, map[string]any{"items": jsonSlice(items), "total": total})
 }
 
 func (h *Handler) dashboard(w http.ResponseWriter, r *http.Request) {
@@ -250,7 +250,7 @@ func (h *Handler) audits(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	writeJSON(w, map[string]any{"items": items, "total": total})
+	writeJSON(w, map[string]any{"items": jsonSlice(items), "total": total})
 }
 
 func (h *Handler) notifyV2(w http.ResponseWriter, r *http.Request) {
@@ -316,6 +316,14 @@ func (h *Handler) writeAuditFromRequest(r *http.Request, action, objectType, obj
 func writeJSON(w http.ResponseWriter, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(v)
+}
+
+// jsonSlice 将 nil slice 规范为「空切片」，使 JSON 为 [] 而非 null，避免管理端表格/下拉读 length 崩溃。
+func jsonSlice[T any](s []T) []T {
+	if s == nil {
+		return []T{}
+	}
+	return s
 }
 
 func contextWithUID(ctx context.Context, uid int64) context.Context {

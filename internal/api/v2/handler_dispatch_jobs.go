@@ -17,5 +17,5 @@ func (h *Handler) listDispatchJobs(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	writeJSON(w, map[string]any{"items": items, "total": total})
+	writeJSON(w, map[string]any{"items": jsonSlice(items), "total": total})
 }
