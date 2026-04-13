@@ -1,0 +1,26 @@
+services:
+  telegram-relay:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: telegram-relay:latest
+    container_name: telegram-relay
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - LISTEN_ADDR=:8080
+      - SECURITY_LEVEL=medium
+      - AUTH_TOKEN=replace-with-strong-token
+      - HMAC_SECRET=replace-with-hmac-secret
+      - TIMESTAMP_SKEW_SEC=300
+      - RATE_LIMIT_PER_SECOND=20
+      - RATE_LIMIT_BURST=40
+      - TELEGRAM_BOT_TOKEN=replace-with-bot-token
+      - TELEGRAM_CHAT_ID=-1001234567890
+      - TELEGRAM_PARSE_MODE=HTML
+      - TELEGRAM_API_BASE_URL=https://api.telegram.org
+      - TELEGRAM_TIMEOUT_SEC=5
+      - RETRY_MAX_ATTEMPTS=3
+      - RETRY_INITIAL_BACKOFF_MS=300
+      - RETRY_MAX_BACKOFF_MS=3000

@@ -1,0 +1,25 @@
+server:
+  listen_addr: ":8080"
+
+security:
+  level: "basic" # basic | medium | strict
+  token: "replace-with-strong-token"
+  hmac_secret: "replace-with-hmac-secret"
+  timestamp_skew_sec: 300
+  ip_whitelist:
+    - "1.2.3.4"
+    - "5.6.7.8"
+  rate_limit_per_second: 20
+  rate_limit_burst: 40
+
+telegram:
+  bot_token: "123456:replace-with-bot-token"
+  chat_id: "-1001234567890"
+  parse_mode: "HTML"
+  api_base_url: "https://api.telegram.org"
+  timeout_sec: 5
+
+retry:
+  max_attempts: 3
+  initial_backoff_ms: 300
+  max_backoff_ms: 3000
