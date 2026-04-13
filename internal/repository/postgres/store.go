@@ -24,6 +24,17 @@ type Store struct {
 	pool *pgxpool.Pool
 }
 
+// AuditLogView 为管理端展示用的审计日志结构。
+type AuditLogView struct {
+	ID         int64     `json:"id"`
+	ActorUserID *int64   `json:"actor_user_id"`
+	Action     string    `json:"action"`
+	ObjectType string    `json:"object_type"`
+	ObjectID   string    `json:"object_id"`
+	Detail     string    `json:"detail"`
+	CreatedAt  time.Time `json:"created_at"`
+}
+
 func NewStore(ctx context.Context, dsn string) (*Store, error) {
 	pool, err := pgxpool.New(ctx, dsn)
 	if err != nil {
@@ -454,4 +465,24 @@ func (s *Store) DashboardStats(ctx context.Context) (map[string]int64, error) {
 		stats[k] = value
 	}
 	return stats, nil
+}
+
+func (s *Store) ListAuditLogs(ctx context.Context, limit int) ([]AuditLogView, error) {
+	rows, err := s.pool.Query(ctx, `
+SELECT id,actor_user_id,action,object_type,object_id,detail::text,created_at
+FROM audit_logs ORDER BY id DESC LIMIT $1
+`, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []AuditLogView
+	for rows.Next() {
+		var a AuditLogView
+		if err := rows.Scan(&a.ID, &a.ActorUserID, &a.Action, &a.ObjectType, &a.ObjectID, &a.Detail, &a.CreatedAt); err != nil {
+			return nil, err
+		}
+		out = append(out, a)
+	}
+	return out, nil
 }

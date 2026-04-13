@@ -43,6 +43,7 @@ func (h *Handler) Register(mux *http.ServeMux) {
 	mux.Handle("/api/v2/destinations", h.withAuth("bot.manage", http.HandlerFunc(h.destinations)))
 	mux.Handle("/api/v2/rules", h.withAuth("rule.manage", http.HandlerFunc(h.rules)))
 	mux.Handle("/api/v2/events", h.withAuth("event.read", http.HandlerFunc(h.events)))
+	mux.Handle("/api/v2/audits", h.withAuth("audit.read", http.HandlerFunc(h.audits)))
 	mux.Handle("/api/v2/dashboard", h.withAuth("event.read", http.HandlerFunc(h.dashboard)))
 	mux.Handle("/api/v2/notify", http.HandlerFunc(h.notifyV2))
 }
@@ -185,6 +186,19 @@ func (h *Handler) dashboard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, stats)
+}
+
+func (h *Handler) audits(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	items, err := h.store.ListAuditLogs(r.Context(), 100)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	writeJSON(w, items)
 }
 
 func (h *Handler) notifyV2(w http.ResponseWriter, r *http.Request) {
