@@ -64,13 +64,18 @@ func (w *DispatchWorker) handleJob(ctx context.Context, jobID int64) {
 		w.logger.Error("load dispatch context failed", "job_id", jobID, "error", err)
 		return
 	}
-	client := telegram.NewClient(config.TelegramConfig{
+	client, err := telegram.NewClient(config.TelegramConfig{
 		BotToken:   postgres.DecryptSecret(bot.BotTokenEnc),
 		ChatID:     destination.ChatID,
 		ParseMode:  destination.ParseMode,
 		APIBaseURL: w.telegramBase.APIBaseURL,
 		TimeoutSec: w.telegramBase.TimeoutSec,
+		ProxyURL:   w.telegramBase.ProxyURL,
 	})
+	if err != nil {
+		w.logger.Error("build telegram client failed", "job_id", job.ID, "error", err)
+		return
+	}
 	relaySvc := relaylegacy.NewService(client, w.retryCfg)
 	err = relaySvc.Send(ctx, model.NotifyRequest{
 		Title:   event.Title,

@@ -48,7 +48,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	telegramClient := telegram.NewClient(cfg.Telegram)
+	telegramClient, err := telegram.NewClient(cfg.Telegram)
+	if err != nil {
+		logger.Error("init telegram client failed", "error", err)
+		os.Exit(1)
+	}
 	relayService := relay.NewService(telegramClient, cfg.Retry)
 	store, err := postgres.NewStore(context.Background(), cfg.Database.DSN)
 	if err != nil {
