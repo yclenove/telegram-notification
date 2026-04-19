@@ -53,6 +53,9 @@ type TelegramConfig struct {
 	ParseMode  string `yaml:"parse_mode"`
 	APIBaseURL string `yaml:"api_base_url"`
 	TimeoutSec int    `yaml:"timeout_sec"`
+	// ProxyURL 出站 HTTP 客户端代理，便于本地经 v2rayN 等访问 api.telegram.org。
+	// 示例：http://127.0.0.1:10809（v2rayN 默认 HTTP）、socks5://127.0.0.1:10808；留空则直连。
+	ProxyURL string `yaml:"proxy_url"`
 }
 
 // RetryConfig 描述 Telegram 发送失败后的重试策略。
@@ -218,6 +221,7 @@ func overrideFromEnv(cfg *Config) {
 	setString("TELEGRAM_PARSE_MODE", &cfg.Telegram.ParseMode)
 	setString("TELEGRAM_API_BASE_URL", &cfg.Telegram.APIBaseURL)
 	setInt("TELEGRAM_TIMEOUT_SEC", &cfg.Telegram.TimeoutSec)
+	setString("TELEGRAM_PROXY", &cfg.Telegram.ProxyURL)
 
 	setInt("RETRY_MAX_ATTEMPTS", &cfg.Retry.MaxAttempts)
 	setInt("RETRY_INITIAL_BACKOFF_MS", &cfg.Retry.InitialBackoffMS)
@@ -343,6 +347,17 @@ func validate(cfg Config) error {
 	}
 	if _, err := time.ParseDuration(fmt.Sprintf("%ds", cfg.Telegram.TimeoutSec)); err != nil {
 		return fmt.Errorf("invalid telegram timeout: %w", err)
+	}
+	if strings.TrimSpace(cfg.Telegram.ProxyURL) != "" {
+		u, err := url.Parse(cfg.Telegram.ProxyURL)
+		if err != nil {
+			return fmt.Errorf("invalid telegram.proxy_url / TELEGRAM_PROXY: %w", err)
+		}
+		switch strings.ToLower(u.Scheme) {
+		case "http", "https", "socks5", "socks5h":
+		default:
+			return fmt.Errorf("telegram proxy: unsupported scheme %q (use http, https, socks5, socks5h)", u.Scheme)
+		}
 	}
 	return nil
 }

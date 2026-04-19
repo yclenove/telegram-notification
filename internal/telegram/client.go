@@ -27,15 +27,26 @@ type sendMessageRequest struct {
 	ParseMode string `json:"parse_mode,omitempty"`
 }
 
-// NewClient 创建 Telegram API 客户端。
-func NewClient(cfg config.TelegramConfig) *Client {
+// NewClient 创建 Telegram API 客户端；若配置了 telegram.proxy_url / TELEGRAM_PROXY，则经该代理访问 Bot API。
+func NewClient(cfg config.TelegramConfig) (*Client, error) {
+	timeout := time.Duration(cfg.TimeoutSec) * time.Second
+	transport, err := newHTTPTransportForProxy(cfg.ProxyURL)
+	if err != nil {
+		return nil, err
+	}
+	var httpClient *http.Client
+	if transport != nil {
+		httpClient = &http.Client{Transport: transport, Timeout: timeout}
+	} else {
+		httpClient = &http.Client{Timeout: timeout}
+	}
 	return &Client{
-		httpClient: &http.Client{Timeout: time.Duration(cfg.TimeoutSec) * time.Second},
+		httpClient: httpClient,
 		botToken:   cfg.BotToken,
 		chatID:     cfg.ChatID,
 		parseMode:  cfg.ParseMode,
 		baseURL:    strings.TrimRight(cfg.APIBaseURL, "/"),
-	}
+	}, nil
 }
 
 // Send 将文本消息发送到指定 chat_id。
